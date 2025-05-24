@@ -1,0 +1,42 @@
+# 忽略虛擬環境
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 忽略生成的輸出文件
+anki_output/*
+!anki_output/.gitkeep
+
+# 忽略Markdown輸出目錄的內容
+markdown_input/*
+!markdown_input/.gitkeep
+!markdown_input/media/
+markdown_input/media/*
+!markdown_input/media/.gitkeep
+
+# 忽略標準化問題目錄的內容
+normalized_questions/*
+!normalized_questions/.gitkeep
+
+# 忽略臨時目錄的內容
+tmp/*
+!tmp/.gitkeep
+
+# 忽略原始zip文件的內容
+zips/*
+!zips/.gitkeep
+
+# 忽略md_input目錄的內容
+md_input/*
+!md_input/.gitkeep
+
+# 忽略系統文件
+.DS_Store
+Thumbs.db
+
+# 忽略編輯器文件
+.vscode/
+.idea/
+*.swp
+*.swo
