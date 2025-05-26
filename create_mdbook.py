@@ -119,10 +119,10 @@ def read_normalized_questions(normalized_dir):
         # Add options
         formatted_question += "\n**Options:**\n\n"
         for option, content in sorted(options.items()):
-            formatted_question += f"**{option}:** {content}\n\n"
+            formatted_question += f"**{option}:** {content}\n\n\n"
         
         # Add correct answer
-        formatted_question += f"\n**Correct Answer:** {correct_answer}\n\n"
+        formatted_question += f"\n**Correct Answer:** {correct_answer}\n\n\n"
         
         # Add explanation
         if explanation:

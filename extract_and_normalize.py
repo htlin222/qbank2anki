@@ -30,7 +30,7 @@ def normalize_filename(filename):
 
 def process_text_file(src_path, dst_path):
     """
-    處理文字檔案，將 # 替換為 -
+    處理文字檔案，將 # 替換為 -，並確保連續的行之間有空行
     """
     try:
         with open(src_path, 'r', encoding='utf-8') as f:
@@ -39,8 +39,24 @@ def process_text_file(src_path, dst_path):
         # 替換所有 # 為 -
         content = content.replace('#', '-')
         
+        # 處理連續的行，確保它們之間有空行
+        # 首先將內容分割成行
+        lines = content.split('\n')
+        normalized_lines = []
+        
+        # 遍歷每一行，確保連續的非空行之間有空行
+        for i, line in enumerate(lines):
+            normalized_lines.append(line)
+            
+            # 如果當前行和下一行都不是空行，則添加一個空行
+            if i < len(lines) - 1 and line.strip() and lines[i+1].strip():
+                normalized_lines.append('')
+        
+        # 將處理後的行重新組合成文本
+        normalized_content = '\n'.join(normalized_lines)
+        
         with open(dst_path, 'w', encoding='utf-8') as f:
-            f.write(content)
+            f.write(normalized_content)
         return True
     except Exception as e:
         print(f"處理文字檔案 {src_path} 時出錯: {e}")
