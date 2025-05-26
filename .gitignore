@@ -4,6 +4,24 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# 全局規則：保留所有資料夾但忽略其內容
+# 忽略所有檔案
+*
+# 不忽略資料夾
+!*/
+# 不忽略 .gitignore 和其他重要檔案
+!.gitignore
+!*.py
+!*.md
+!*.txt
+!*.json
+!*.yaml
+!*.yml
+
+# 忽略所有 .DS_Store 檔案
+**/.DS_Store
+
+# 為每個資料夾添加 .gitkeep
 # 忽略生成的輸出文件
 anki_output/*
 !anki_output/.gitkeep
@@ -31,8 +49,11 @@ zips/*
 md_input/*
 !md_input/.gitkeep
 
+# 忽略mdbook目錄的內容
+mdbook/*
+!mdbook/.gitkeep
+
 # 忽略系統文件
-.DS_Store
 Thumbs.db
 
 # 忽略編輯器文件

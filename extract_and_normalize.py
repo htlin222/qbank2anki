@@ -20,6 +20,34 @@ EXTRACT_DIR = os.path.join(BASE_DIR, "normalized_questions")
 # 確保輸出目錄存在
 os.makedirs(EXTRACT_DIR, exist_ok=True)
 
+def normalize_filename(filename):
+    """
+    標準化檔案名稱，將空格替換為底線
+    """
+    # 替換檔案名稱中的空格為底線
+    filename = filename.replace(' ', '_')
+    return filename
+
+def process_text_file(src_path, dst_path):
+    """
+    處理文字檔案，將 # 替換為 -
+    """
+    try:
+        with open(src_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # 替換所有 # 為 -
+        content = content.replace('#', '-')
+        
+        with open(dst_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        return True
+    except Exception as e:
+        print(f"處理文字檔案 {src_path} 時出錯: {e}")
+        # 如果處理失敗，直接複製原檔案
+        shutil.copy2(src_path, dst_path)
+        return False
+
 def extract_zip_file(zip_path, extract_to):
     """解壓縮 ZIP 或 RAR 檔案到指定目錄"""
     if zip_path.endswith('.zip'):
@@ -63,6 +91,8 @@ def normalize_folder_structure(temp_dir, question_num):
     
     # 尋找包含 question.txt 的資料夾
     for root, dirs, files in os.walk(temp_dir):
+        # 移除隱藏目錄 (點檔案)
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
         if "question.txt" in files:
             nested_dir = root
             break
@@ -70,16 +100,26 @@ def normalize_folder_structure(temp_dir, question_num):
     if nested_dir:
         # 找到包含問題檔案的資料夾，將其內容複製到標準化目錄
         for item in os.listdir(nested_dir):
+            # 跳過點檔案 (隱藏檔案)
+            if item.startswith('.'):
+                continue
+            # 標準化檔案名稱，將空格替換為底線
+            normalized_item = normalize_filename(item)
             src = os.path.join(nested_dir, item)
-            dst = os.path.join(target_dir, item)
+            dst = os.path.join(target_dir, normalized_item)
             
             if os.path.isdir(src):
                 # 確保圖片資料夾存在
                 if item in ["question_figures", "explain_figures"]:
                     os.makedirs(dst, exist_ok=True)
                     for img in os.listdir(src):
+                        # 跳過點檔案 (隱藏檔案)
+                        if img.startswith('.'):
+                            continue
+                        # 標準化圖片檔案名稱
+                        normalized_img = normalize_filename(img)
                         img_src = os.path.join(src, img)
-                        img_dst = os.path.join(dst, img)
+                        img_dst = os.path.join(dst, normalized_img)
                         if os.path.isfile(img_src):
                             shutil.copy2(img_src, img_dst)
                 else:
@@ -90,24 +130,44 @@ def normalize_folder_structure(temp_dir, question_num):
                             sub_dst = os.path.join(target_dir, sub_item)
                             os.makedirs(sub_dst, exist_ok=True)
                             for img in os.listdir(sub_src):
+                                # 跳過點檔案 (隱藏檔案)
+                                if img.startswith('.'):
+                                    continue
+                                # 標準化嵌套圖片檔案名稱
+                                normalized_img = normalize_filename(img)
                                 img_src = os.path.join(sub_src, img)
-                                img_dst = os.path.join(sub_dst, img)
+                                img_dst = os.path.join(sub_dst, normalized_img)
                                 if os.path.isfile(img_src):
                                     shutil.copy2(img_src, img_dst)
             elif os.path.isfile(src):
-                # 複製檔案
-                shutil.copy2(src, dst)
+                # 檢查是否為文字檔案
+                if src.endswith('.txt'):
+                    # 處理文字檔案，替換 # 為 -
+                    process_text_file(src, dst)
+                else:
+                    # 複製其他檔案
+                    shutil.copy2(src, dst)
     else:
         # 沒有找到包含問題檔案的資料夾，嘗試直接複製所有檔案
         print(f"警告: 在 {temp_dir} 中找不到 question.txt，嘗試直接複製所有檔案")
         for item in os.listdir(temp_dir):
+            # 跳過點檔案 (隱藏檔案)
+            if item.startswith('.'):
+                continue
+            # 標準化檔案名稱
+            normalized_item = normalize_filename(item)
             src = os.path.join(temp_dir, item)
-            dst = os.path.join(target_dir, item)
+            dst = os.path.join(target_dir, normalized_item)
             
             if os.path.isdir(src):
                 shutil.copytree(src, dst, dirs_exist_ok=True)
             elif os.path.isfile(src):
-                shutil.copy2(src, dst)
+                if src.endswith('.txt'):
+                    # 處理文字檔案，替換 # 為 -
+                    process_text_file(src, dst)
+                else:
+                    # 複製其他檔案
+                    shutil.copy2(src, dst)
     
     # 確保所有必要的檔案和資料夾都存在
     ensure_required_files(target_dir)
@@ -144,10 +204,13 @@ def ensure_required_files(dir_path):
 
 def process_zip_files():
     """處理 zips 目錄中的所有壓縮檔"""
-    # 獲取所有 zip 檔案
+    # 獲取所有 zip 檔案，排除點檔案
     zip_files = []
     for ext in ['*.zip', '*.rar']:
-        zip_files.extend(glob.glob(os.path.join(ZIPS_DIR, ext)))
+        files = glob.glob(os.path.join(ZIPS_DIR, ext))
+        # 過濾掉點檔案
+        files = [f for f in files if not os.path.basename(f).startswith('.')]
+        zip_files.extend(files)
     
     zip_files.sort()
     
@@ -158,7 +221,9 @@ def process_zip_files():
     for zip_file in zip_files:
         # 從檔案名稱中提取問題編號
         filename = os.path.basename(zip_file)
-        match = re.match(r'(\d+)\.(?:zip|rar)', filename)
+        # 標準化檔案名稱，將空格替換為底線
+        normalized_filename = normalize_filename(filename)
+        match = re.match(r'(\d+)\.(?:zip|rar)', normalized_filename)
         if match:
             question_num = int(match.group(1))
             

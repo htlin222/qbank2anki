@@ -13,14 +13,16 @@ ZIPS_DIR = $(BASE_DIR)/zips
 NORMALIZED_DIR = $(BASE_DIR)/normalized_questions
 OUTPUT_DIR = $(BASE_DIR)/anki_output
 MARKDOWN_DIR = $(BASE_DIR)/markdown_input
+MDBOOK_DIR = $(BASE_DIR)/mdbook
 
 # 腳本
 EXTRACT_SCRIPT = $(BASE_DIR)/extract_and_normalize.py
 DECK_SCRIPT = $(BASE_DIR)/generate_anki_with_md2anki.py
+MDBOOK_SCRIPT = $(BASE_DIR)/create_mdbook.py
 
 # 默認目標
 .PHONY: all
-all: env extract deck
+all: env extract deck mdbook
 
 # 創建虛擬環境並安裝依賴
 .PHONY: env
@@ -46,11 +48,18 @@ deck:
 	@$(VENV_ACTIVATE) && $(PYTHON) $(DECK_SCRIPT)
 	@echo "Anki牌組生成完成"
 
+# 生成mdBook
+.PHONY: mdbook
+mdbook:
+	@echo "生成mdBook..."
+	@$(VENV_ACTIVATE) && $(PYTHON) $(MDBOOK_SCRIPT)
+	@echo "mdBook生成完成"
+
 # 清理生成的文件
 .PHONY: clean
 clean:
 	@echo "清理生成的文件..."
-	@rm -rf $(OUTPUT_DIR)/* $(MARKDOWN_DIR)/*
+	@rm -rf $(OUTPUT_DIR)/* $(MARKDOWN_DIR)/* $(MDBOOK_DIR)/*
 	@echo "清理完成"
 
 # 完全清理（包括虛擬環境）
@@ -67,7 +76,8 @@ help:
 	@echo "  make env      - 創建虛擬環境並安裝依賴"
 	@echo "  make extract  - 提取和標準化問題文件夾"
 	@echo "  make deck     - 生成Anki牌組"
+	@echo "  make mdbook   - 生成mdBook"
 	@echo "  make clean    - 清理生成的文件"
 	@echo "  make clean-all - 完全清理（包括虛擬環境）"
-	@echo "  make all      - 執行所有步驟（env, extract, deck）"
+	@echo "  make all      - 執行所有步驟（env, extract, deck, mdbook）"
 	@echo "  make help     - 顯示此幫助信息"
