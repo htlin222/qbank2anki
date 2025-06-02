@@ -13,7 +13,7 @@ import subprocess
 from pathlib import Path
 
 # 配置路徑
-BASE_DIR = "/Users/htlin/Downloads/校稿完成"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 使用當前腳本所在目錄
 ZIPS_DIR = os.path.join(BASE_DIR, "zips")
 EXTRACT_DIR = os.path.join(BASE_DIR, "normalized_questions")
 

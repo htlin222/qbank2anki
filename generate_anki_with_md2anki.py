@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 # 配置
-BASE_DIR = Path('/Users/htlin/Downloads/校稿完成')
+BASE_DIR = Path(__file__).parent.absolute()  # 使用當前腳本所在目錄
 QUESTIONS_DIR = BASE_DIR / 'normalized_questions'
 OUTPUT_DIR = BASE_DIR / 'anki_output'
 MARKDOWN_DIR = BASE_DIR / 'markdown_input'

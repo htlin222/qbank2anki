@@ -10,7 +10,7 @@ import glob
 import sys
 
 # Configuration
-BASE_DIR = "/Users/htlin/Downloads/校稿完成"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Use current script directory
 ZIPS_DIR = os.path.join(BASE_DIR, "zips")
 TEMP_DIR = os.path.join(BASE_DIR, "tmp")
 EXTRACT_DIR = os.path.join(BASE_DIR, "extracted")
@@ -379,8 +379,6 @@ if __name__ == "__main__":
     # Copy all images to the input directory
     for img in os.listdir(TEMP_DIR):
         shutil.copy2(os.path.join(TEMP_DIR, img), os.path.join(md_input_dir, img))
-    
-    return processed_count
 
 if __name__ == "__main__":
     # Clean up temp directory if it exists

@@ -26,6 +26,9 @@ __pycache__/
 anki_output/*
 !anki_output/.gitkeep
 
+mkdocs/*
+!mkdocs/.gitkeep
+
 # 忽略Markdown輸出目錄的內容
 markdown_input/*
 !markdown_input/.gitkeep
