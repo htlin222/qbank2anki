@@ -97,7 +97,7 @@ def create_question_md(question_num, source_dir, target_dir):
                 shutil.copy2(figure, target_figures_dir)
     
     # Create markdown content
-    md_content = [f"# 題目 {question_num:03d}\n\n## Question\n"]
+    md_content = [f"# Question\n\n## {question_num:03d}\n"]
     md_content.append(question_content)
     md_content.append("\n")
     
@@ -112,7 +112,7 @@ def create_question_md(question_num, source_dir, target_dir):
     # Add options
     md_content.append("\n## Options\n")
     for letter, content in options:
-        md_content.append(f"- **{letter}**. {content}\n")
+        md_content.append(f"- [ ] **{letter}**. {content}\n")
     
     # Add correct answer if available and not empty
     if correct_answer and correct_answer != "?":
