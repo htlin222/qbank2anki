@@ -56,6 +56,10 @@ md_input/*
 mdbook/*
 !mdbook/.gitkeep
 
+# 忽略mkdoc目錄的內容
+mkdoc/*
+!mkdoc/.gitkeep
+
 # 忽略系統文件
 Thumbs.db
 

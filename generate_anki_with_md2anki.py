@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import subprocess
+import html
 from pathlib import Path
 
 # 配置
@@ -41,6 +42,13 @@ def sanitize_markdown(text):
     # 將 ## 替換為 * 以避免干擾 Markdown 結構
     return text.replace('##', '*')
 
+def escape_html_content(text):
+    """安全地轉義HTML內容"""
+    if not text or not isinstance(text, str):
+        return text
+    # 使用html.escape轉義HTML字符，但保留換行符
+    return html.escape(text, quote=False)
+
 def generate_markdown():
     """生成適用於md2anki的Markdown文件"""
     question_nums = list(range(1, 121))
@@ -71,7 +79,7 @@ def generate_markdown():
                 continue
             
             with open(question_file, 'r', encoding='utf-8') as f:
-                question_text = f.read().strip()
+                question_text = escape_html_content(f.read().strip())
             
             # 讀取選項
             option_files = {
@@ -86,7 +94,7 @@ def generate_markdown():
             for option, file_path in option_files.items():
                 if os.path.exists(file_path):
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        options[option] = f.read().strip()
+                        options[option] = escape_html_content(f.read().strip())
                 else:
                     options[option] = ""
             
@@ -94,7 +102,7 @@ def generate_markdown():
             correct_answer_file = question_dir / "correct_answer.txt"
             if os.path.exists(correct_answer_file):
                 with open(correct_answer_file, 'r', encoding='utf-8') as f:
-                    correct_answer = f.read().strip()
+                    correct_answer = escape_html_content(f.read().strip())
             else:
                 correct_answer = "未提供"
             
@@ -102,7 +110,7 @@ def generate_markdown():
             explanation_file = question_dir / "explain.txt"
             if os.path.exists(explanation_file):
                 with open(explanation_file, 'r', encoding='utf-8') as f:
-                    explanation = f.read().strip()
+                    explanation = escape_html_content(f.read().strip())
             else:
                 explanation = "未提供解釋"
             

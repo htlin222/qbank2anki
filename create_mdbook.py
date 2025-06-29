@@ -225,15 +225,48 @@ def main():
     print(f"Total questions processed: {len(questions)}")
     print("Run 'mdbook serve' in the mdbook directory to view the book.")
     
-    # Create a symlink to the normalized_questions directory for images
-    normalized_link = os.path.join(book_src_dir, "normalized_questions")
-    if not os.path.exists(normalized_link):
-        # Use relative path for the symlink target
-        rel_path = os.path.relpath(normalized_dir, book_src_dir)
-        os.symlink(rel_path, normalized_link, target_is_directory=True)
-        print(f"Created symlink to normalized_questions for images")
-    else:
-        print(f"Symlink to normalized_questions already exists")
+    # Copy the normalized_questions directory for images
+    normalized_dest = os.path.join(book_src_dir, "normalized_questions")
+    
+    # Remove existing directory if it exists to ensure fresh copy
+    if os.path.exists(normalized_dest):
+        print(f"Removing existing normalized_questions directory...")
+        shutil.rmtree(normalized_dest)
+    
+    # Create the directory structure
+    ensure_dir(normalized_dest)
+    
+    # Copy all question directories with their images
+    print(f"Copying images from normalized_questions...")
+    for question_dir in glob.glob(os.path.join(normalized_dir, "*")):
+        if not os.path.isdir(question_dir):
+            continue
+            
+        question_num = os.path.basename(question_dir)
+        dest_question_dir = os.path.join(normalized_dest, question_num)
+        ensure_dir(dest_question_dir)
+        
+        # Copy question figures
+        question_figures_dir = os.path.join(question_dir, "question_figures")
+        if os.path.exists(question_figures_dir) and os.path.isdir(question_figures_dir):
+            dest_figures_dir = os.path.join(dest_question_dir, "question_figures")
+            ensure_dir(dest_figures_dir)
+            for figure in os.listdir(question_figures_dir):
+                src_figure = os.path.join(question_figures_dir, figure)
+                if os.path.isfile(src_figure):
+                    shutil.copy2(src_figure, os.path.join(dest_figures_dir, figure))
+        
+        # Copy explanation figures
+        explain_figures_dir = os.path.join(question_dir, "explain_figures")
+        if os.path.exists(explain_figures_dir) and os.path.isdir(explain_figures_dir):
+            dest_figures_dir = os.path.join(dest_question_dir, "explain_figures")
+            ensure_dir(dest_figures_dir)
+            for figure in os.listdir(explain_figures_dir):
+                src_figure = os.path.join(explain_figures_dir, figure)
+                if os.path.isfile(src_figure):
+                    shutil.copy2(src_figure, os.path.join(dest_figures_dir, figure))
+    
+    print(f"Successfully copied all images to mdbook structure")
 
 if __name__ == "__main__":
     main()
