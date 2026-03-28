@@ -1,3 +1,7 @@
+![GitHub stars](https://img.shields.io/github/stars/htlin222/qbank2anki?style=flat-square)
+![Last commit](https://img.shields.io/github/last-commit/htlin222/qbank2anki?style=flat-square)
+![License](https://img.shields.io/github/license/htlin222/qbank2anki?style=flat-square)
+
 # 腫專2024 Anki牌組生成工具
 
 這個工具用於從標準化的問題文件夾生成Anki牌組，適用於腫專2024的考試準備。

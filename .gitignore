@@ -17,6 +17,7 @@ __pycache__/
 !*.json
 !*.yaml
 !*.yml
+!LICENSE
 
 # 忽略所有 .DS_Store 檔案
 **/.DS_Store
